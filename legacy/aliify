@@ -1,0 +1,101 @@
+#!/usr/bin/env lua
+--[[This program takes an alias name and command string and 
+--  appends the content to a file which should be added to a
+--  users .bashrc or .zshrc
+]]
+
+-- String tools, courtesy of https://github.com/stein197/lua-string
+-- (pasted here to avoid dependency)
+function string:trim(chars)
+	chars = chars or "%s"
+	return self:trimstart(chars):trimend(chars)
+end
+function string:trimstart(chars)
+	return self:gsub("^["..(chars or "%s").."]+", "")
+end
+function string:trimend(chars)
+	return self:gsub("["..(chars or "%s").."]+$", "")
+end
+
+Aliify = {
+	-- FIELDS
+	filePath = "/.config/aliify/",
+	fileName = "aliify_aliases.sh",
+	-- METHODS
+	AliifyAliases = function()
+		home = os.getenv("HOME")
+		return home..Aliify.filePath..Aliify.fileName
+	end,
+	getAliasName = function()
+		io.write("| Alias: ")
+		return io.read():trim()
+	end,
+	getAliasCommand = function()
+		io.write("| Command: ")
+		return io.read():trim()
+	end,
+	saveAlias = function(name, command, url)
+		local file = io.open(url, "a")
+		if file
+		then
+			file:write("\nalias "..name.."='"..command.."'")
+			file:close()
+			print("| Added: alias "..name.."='"..command.."'")
+			print("| Location: "..url)
+		else
+			print("| Error: Could not open file "..url.." for writing.")
+		end
+	end,
+	help = function()
+		print("Usage: aliify [command]")
+		print("Commands:")
+		print("  new - Create a new alias")
+		print("  remove - Remove an alias")
+		print("  list - List all aliases")
+		print("  help - Show this help message")
+		print("  (default) - [new]")
+	end,
+	choices = {
+		new = function()
+			print("/======= Aliify - Alias Manager =======\\")
+			local name = Aliify.getAliasName()
+			local command = Aliify.getAliasCommand()
+			local file = Aliify.AliifyAliases()
+			print("|======================================|")
+			Aliify.saveAlias(name, command, file)
+      print("| Changes saved. Run \"source ~/.zshrc\" to refresh your aliases.")
+			print("\\======================================/")
+		end,
+		remove = function()
+			print("'remove' command not yet implemented.")
+		end,
+		list = function()
+			print("'list' commend not yet implemented.")
+		end,
+	},
+	-- HELPERS
+	clear = function()
+		if os.execute("clear") == nil then
+        os.execute("cls")
+    end
+	end,
+	-- APPLICATION
+	run = function()
+		if arg[2] ~= nil then
+			print("ERROR: Use one argument.")
+			Aliify.help()
+			return
+		end
+
+		local command = arg[1] or "new"
+
+		Aliify.clear()
+		if Aliify.choices[command] then
+			Aliify.choices[command]()
+		else
+			Aliify.help()
+		end
+	end
+}
+
+Aliify.run()
