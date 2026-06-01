@@ -1,20 +1,24 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'repo.dart';
 
 /// Handles setup and management of the Aliify application. Self iniitalizes.
 ///
 /// Initializes the program and and ensures it's environment is ready to be used. Checks
-/// that all necessary directories and files are in existence and creates if needed.
+/// that all necessary directories and files are in existence and creates if needed. Additionally
+/// provided access to Repo.
 final class AliifyState {
   Status status = .uninitialized;
   final String location;
   late final File file;
   late final Directory directory;
+  late final AliifyRepo repo;
 
   AliifyState._()
     : location = p.dirname(p.dirname(Platform.script.toFilePath())) {
     directory = Directory(p.join(location, 'bank'));
     file = File(p.join(directory.path, 'alias_bank.sh'));
+    repo = AliifyRepo(_instance);
   }
   static final AliifyState _instance = ._();
   factory AliifyState() => _instance;

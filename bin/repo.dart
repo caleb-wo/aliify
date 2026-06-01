@@ -1,9 +1,45 @@
+import 'dart:collection';
 import 'dart:io';
 
 import 'config.dart';
 
+/// Manages reading and writing aliify aliases.
 final class AliifyRepo {
-  final AliifyState state = AliifyState();
+  final AliifyState state;
+  late final AliasList aliases;
+
+  AliifyRepo(this.state) {
+    _loadAliases();
+  }
+
+  void _loadAliases() {
+    if (state.status == .uninitialized) {
+      stderr.writeln('[ERROR] Aliify is not intialized.');
+      exit(255);
+    }
+
+    try {
+      aliases = AliasList(state.file.readAsLinesSync());
+    } catch (e) {
+      stderr.writeln('[ERROR] Issues reading ${state.file.path} \n$e');
+      exit(255);
+    }
+  }
+
+  void _saveAliases() {
+    var current = aliases.list[0];
+    try {
+      for (final alias in aliases) {
+        current = alias;
+        state.file.writeAsStringSync(alias.toString());
+      }
+    } catch (e) {
+      stderr.writeln(
+        "[ERROR] Couldn't write \"$current\" to file: ${state.file.path}",
+      );
+      exit(255);
+    }
+  }
 }
 
 class Alias {
@@ -16,15 +52,38 @@ class Alias {
     required this.commandString,
     required this.position,
   });
+  factory Alias.fromPartial(PartialAlias partial, {required int position}) {
+    return Alias(
+      name: partial.name,
+      commandString: partial.commandString,
+      position: position,
+    );
+  }
 
   @override
   String toString() {
-    return "- $position. $name='$commandString';";
+    return "alias $name='$commandString';";
+  }
+
+  String toDisplayString() {
+    return "- $position. alias $name='$commandString';";
   }
 }
 
-class AliasList {
+class PartialAlias {
+  final String name;
+  final String commandString;
+
+  PartialAlias(this.name, this.commandString);
+}
+
+class AliasList extends ListBase<Alias> {
   late List<Alias> list;
+
+  @override
+  int get length => list.length;
+  @override
+  set length(int newLength) => list.length = newLength;
 
   AliasList(List<String> source) {
     list = parse(source);
@@ -63,14 +122,36 @@ class AliasList {
 
   @override
   String toString() {
-    final buffer = StringBuffer('Aliases: [');
     if (list.isEmpty) return 'AliasList: [ /* empty */ ]'; // Saftey check
+    final buffer = StringBuffer('Aliases: [');
 
     for (final alias in list) {
-      buffer.writeln('  $alias');
+      buffer.writeln('  ${alias.toDisplayString()}');
     }
     buffer.writeln(']');
 
     return buffer.toString();
+  }
+
+  @override
+  operator [](int index) {
+    return list[index];
+  }
+
+  @override
+  void operator []=(int index, dynamic value) {
+    switch (value) {
+      case Alias newAlias:
+        list[index] = newAlias;
+      case PartialAlias newPartial:
+        list[index] = Alias.fromPartial(
+          newPartial,
+          position: list[index].position,
+        );
+      default:
+        throw ArgumentError(
+          'Unsupported assignment value type: ${value.runtimeType}',
+        );
+    }
   }
 }
