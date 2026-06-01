@@ -7,23 +7,23 @@ import 'config.dart';
 
 /// Manages reading and writing aliify aliases.
 final class AliifyRepo {
-  final AliifyState state;
+  final AliifyState _state;
   late final AliasList aliases;
 
-  AliifyRepo(this.state) {
+  AliifyRepo(this._state) {
     _loadAliases();
   }
 
   void _loadAliases() {
-    if (state.status == .uninitialized) {
+    if (_state.status == .uninitialized) {
       stderr.writeln('[ERROR] Aliify is not intialized.');
       exit(255);
     }
 
     try {
-      aliases = AliasList(state.file.readAsLinesSync());
+      aliases = AliasList(_state.file.readAsLinesSync());
     } catch (e) {
-      stderr.writeln('[ERROR] Issues reading ${state.file.path} \n$e');
+      stderr.writeln('[ERROR] Issues reading ${_state.file.path} \n$e');
       exit(255);
     }
   }
@@ -40,10 +40,10 @@ final class AliifyRepo {
         buffer.writeln(alias);
       }
 
-      state.file.writeAsStringSync(buffer.toString());
+      _state.file.writeAsStringSync(buffer.toString());
     } catch (e) {
       stderr.writeln(
-        "[ERROR] Couldn't write \"$current\" to file: ${state.file.path}",
+        "[ERROR] Couldn't write \"$current\" to file: ${_state.file.path}",
       );
       exit(255);
     }
