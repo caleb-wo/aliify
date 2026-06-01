@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'dart:developer';
 import 'dart:io';
+import 'package:characters/characters.dart';
 
 import 'config.dart';
 
@@ -27,12 +29,18 @@ final class AliifyRepo {
   }
 
   void _saveAliases() {
+    if (aliases.isEmpty) return;
+
+    var buffer = StringBuffer(
+      '# DO NOT EDIT. This file is used by the Aliify program.',
+    );
     var current = aliases.list[0];
     try {
       for (final alias in aliases) {
-        current = alias;
-        state.file.writeAsStringSync(alias.toString());
+        buffer.writeln(alias);
       }
+
+      state.file.writeAsStringSync(buffer.toString());
     } catch (e) {
       stderr.writeln(
         "[ERROR] Couldn't write \"$current\" to file: ${state.file.path}",
@@ -95,14 +103,33 @@ class AliasList extends ListBase<Alias> {
     var counter = 1;
 
     for (final line in source) {
+      if (line.startsWith('#')) continue;
+
       final halves = line.split('=');
       if (halves.length != 2) {
         stderr.writeln('[ERROR] Line: $line');
         exit(255);
       }
 
-      final name = halves[0].split(' ')[1];
-      final command = halves[1];
+      final name = halves[0].split(' ')[1].trim();
+      final chars = halves[1].trim().split('');
+
+      final filteredChars = chars.indexed.where((pair) {
+        final (idx, char) = pair;
+
+        if (idx == 0 && char == "'") {
+          return false;
+        } else if (idx == chars.length - 1 && char == ';') {
+          return false;
+        } else if (idx == chars.length - 2 && char == "'") {
+          return false;
+        } else {
+          return true;
+        }
+      });
+
+      final command = filteredChars.map((pair) => pair.$2).join('');
+
       if (!command.startsWith("'")) {
         stderr.writeln(
           "[ERROR] Command string must start with \"'\".\nLine: $line",
