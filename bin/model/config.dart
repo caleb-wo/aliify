@@ -16,12 +16,11 @@ final class AliifyState {
 
   AliifyState._()
     : location = p.dirname(p.dirname(Platform.script.toFilePath())) {
-
     directory = Directory(p.join(location, 'bank'));
     file = File(p.join(directory.path, 'alias_bank.sh'));
-    repo = AliifyRepo(_instance);
-
     _setup();
+
+    repo = AliifyRepo(_instance);
   }
   static final AliifyState _instance = ._();
   factory AliifyState() => _instance;

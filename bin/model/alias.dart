@@ -70,6 +70,13 @@ class AliasList extends ListBase<Alias> {
       final name = halves[0].split(' ')[1].trim();
       final chars = halves[1].trim().split('');
 
+      if (chars[0] != "'") {
+        stderr.writeln(
+          "[ERROR] Command string must start with \"'\".\nLine: $line",
+        );
+        exit(255);
+      }
+
       final filteredChars = chars.indexed.where((pair) {
         final (idx, char) = pair;
 
@@ -86,12 +93,6 @@ class AliasList extends ListBase<Alias> {
 
       final command = filteredChars.map((pair) => pair.$2).join('');
 
-      if (!command.startsWith("'")) {
-        stderr.writeln(
-          "[ERROR] Command string must start with \"'\".\nLine: $line",
-        );
-        exit(255);
-      }
       list.add(
         Alias(
           name: name,
