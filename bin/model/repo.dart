@@ -6,7 +6,7 @@ import 'config.dart';
 /// Manages reading and writing aliify aliases.
 final class AliifyRepo {
   final AliifyState _state;
-  late AliasList aliases;
+  late final AliasList aliases;
 
   AliifyRepo(this._state) {
     _loadAliases();
@@ -31,7 +31,7 @@ final class AliifyRepo {
 
     var buffer = StringBuffer(
       '# DO NOT EDIT. This file is used by the Aliify program.',
-    );
+    )..writeln();
     var current = aliases.list[0];
     try {
       for (final alias in aliases) {
@@ -49,7 +49,6 @@ final class AliifyRepo {
 
   void _sync() {
     _saveAliases();
-    _loadAliases();
   }
 
   void list() {
