@@ -20,7 +20,7 @@ final class AliifyState {
     file = File(p.join(directory.path, 'alias_bank.sh'));
     _setup();
 
-    repo = AliifyRepo(_instance);
+    repo = AliifyRepo(this);
   }
   static final AliifyState _instance = ._();
   factory AliifyState() => _instance;

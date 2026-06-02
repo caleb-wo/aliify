@@ -107,7 +107,7 @@ class AliasList extends ListBase<Alias> {
   @override
   String toString() {
     if (list.isEmpty) return 'AliasList: [ /* empty */ ]'; // Saftey check
-    final buffer = StringBuffer('Aliases: [');
+    final buffer = StringBuffer('Aliases: [')..writeln();
 
     for (final alias in list) {
       buffer.writeln('  ${alias.toDisplayString()}');
@@ -115,6 +115,16 @@ class AliasList extends ListBase<Alias> {
     buffer.writeln(']');
 
     return buffer.toString();
+  }
+
+  @override
+  void add(Alias element) {
+    list.add(element);
+  }
+
+  @override
+  Alias removeAt(int index) {
+    return list.removeAt(index);
   }
 
   @override
