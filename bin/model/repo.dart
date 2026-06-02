@@ -47,6 +47,31 @@ final class AliifyRepo {
     }
   }
 
-  void list(){
+  void list() {
+    print(aliases);
+  }
+
+  void add(PartialAlias partial) {
+    aliases.add(Alias.fromPartial(partial, position: aliases.length));
+    _saveAliases();
+  }
+
+  Alias remove(int index) {
+    _saveAliases();
+    return aliases.removeAt(index);
+  }
+
+  (String old, String fresh) update({
+    required int position,
+    required PartialAlias using,
+  }) {
+    final old = aliases[position - 1].toString();
+    aliases[--position] = Alias.fromPartial(using, position: position);
+
+    return (old, aliases[--position].toString());
+  }
+
+  (String dirPath, String filePath) resources() {
+    return (_state.directory.path, _state.file.path);
   }
 }

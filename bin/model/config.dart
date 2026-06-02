@@ -16,22 +16,27 @@ final class AliifyState {
 
   AliifyState._()
     : location = p.dirname(p.dirname(Platform.script.toFilePath())) {
+
     directory = Directory(p.join(location, 'bank'));
     file = File(p.join(directory.path, 'alias_bank.sh'));
     repo = AliifyRepo(_instance);
+
+    _setup();
   }
   static final AliifyState _instance = ._();
   factory AliifyState() => _instance;
 
-  (bool directory, bool file) check() {
+  (bool directory, bool file) _check() {
     var dir = directory.existsSync();
     var f = file.existsSync();
     return (dir, f);
   }
 
-  bool setup() {
+  /// Checks that the necessary file and directory are created. If not, it handles the
+  /// creation.
+  bool _setup() {
     try {
-      var exists = check();
+      var exists = _check();
       if (exists.$1 && exists.$2) {
         status = .initialized;
         return true;
