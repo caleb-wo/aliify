@@ -14,8 +14,7 @@ final class AliifyState {
   late final Directory directory;
   late final AliifyRepo repo;
 
-  AliifyState._()
-    : location = p.dirname(p.dirname(Platform.script.toFilePath())) {
+  AliifyState._() : location = _resolveLocation() {
     directory = Directory(p.join(location, 'bank'));
     file = File(p.join(directory.path, 'alias_bank.sh'));
     _setup();
@@ -29,6 +28,20 @@ final class AliifyState {
     var dir = directory.existsSync();
     var f = file.existsSync();
     return (dir, f);
+  }
+
+  // 1. Add this static helper method inside your AliifyState class
+  static String _resolveLocation() {
+    final exe = Platform.resolvedExecutable;
+
+    // If the executable is 'dart' or 'dart.exe', we are in Development (JIT) mode
+    if (exe.endsWith('dart') || exe.endsWith('dart.exe')) {
+      return p.dirname(p.dirname(Platform.script.toFilePath()));
+    }
+
+    // Otherwise, we are in Production (AOT) mode.
+    // resolvedExecutable points straight to the compiled binary inside your project folder!
+    return p.dirname(exe);
   }
 
   /// Checks that the necessary file and directory are created. If not, it handles the
