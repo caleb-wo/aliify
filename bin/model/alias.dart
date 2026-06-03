@@ -59,22 +59,31 @@ class AliasList extends ListBase<Alias> {
     var counter = 1;
 
     for (final line in source) {
-      if (line.startsWith('#')) continue;
+      if (line.startsWith('#') || line.trim().isEmpty) continue;
+      final equalsIdx = line.indexOf('=');
 
-      final halves = line.split('=');
-      if (halves.length != 2) {
+      if (equalsIdx == -1) {
         stderr.writeln('[ERROR] Line: $line');
-        exit(255);
+        continue;
       }
 
-      final name = halves[0].split(' ')[1].trim();
-      final chars = halves[1].trim().split('');
+      final namePart = line.substring(0, equalsIdx).trim();
+      final commandPart = line.substring(equalsIdx + 1).trim();
 
-      if (chars[0] != "'") {
+      final nameHalves = namePart.split(' ');
+      if (nameHalves.length < 2) {
+        stderr.writeln('[ERROR] Line: $line');
+        continue;
+      }
+
+      final name = nameHalves[1].trim();
+      final chars = commandPart.split('');
+
+      if (chars.isEmpty || chars[0] != "'") {
         stderr.writeln(
           "[ERROR] Command string must start with \"'\".\nLine: $line",
         );
-        exit(255);
+        continue;
       }
 
       final filteredChars = chars.indexed.where((pair) {
