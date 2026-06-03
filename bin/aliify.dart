@@ -42,6 +42,9 @@ class ListCommand extends Command {
   @override
   final String description = 'Lists all saved aliases.';
 
+  @override
+  List<String> get aliases => ['l', 'ls'];
+
   ListCommand(this.repo);
 
   @override
@@ -60,6 +63,9 @@ class ResourcesCommand extends Command {
 
   @override
   final String description = 'Lists the directory and file Aliify works with.';
+
+  @override
+  List<String> get aliases => ['re', 'resource', 'paths'];
 
   ResourcesCommand(this.repo);
 
@@ -81,6 +87,9 @@ class AddCommand extends Command {
   @override
   final String description =
       'Adds a new alias.\nUsage: aliify add <name> <command>';
+
+  @override
+  List<String> get aliases => ['a', 'new', 'create'];
 
   AddCommand(this.repo);
 
@@ -110,6 +119,9 @@ class RemoveCommand extends Command {
   final String description =
       'Removes an alias by its position number. Run `aliify list` to get the position.\n'
       'Usage: aliify remove <position>';
+
+  @override
+  List<String> get aliases => ['r', 'rm', 'delete'];
 
   RemoveCommand(this.repo);
 
@@ -146,6 +158,9 @@ class UpdateCommand extends Command {
   final String description =
       'Updates an existing alias.\nUsage: aliify update <position> <new_name> <new_command>';
 
+  @override
+  List<String> get aliases => ['u'];
+
   UpdateCommand(this.repo);
 
   @override
@@ -178,18 +193,23 @@ class UpdateCommand extends Command {
   }
 }
 
+/// COMMAND: setup
+/// Usage: aliify setup
 class SetupCommand extends Command {
   final AliifyState _state;
-
-  SetupCommand(this._state)
-    : description =
-          "Appends and sources aliify's file path: ${_state.file.path} command into the shell's config.";
 
   @override
   String name = 'setup';
 
   @override
   String description;
+
+  @override
+  List<String> get aliases => ['init', 's'];
+
+  SetupCommand(this._state)
+    : description =
+          "Appends and sources aliify's file path: ${_state.file.path} command into the shell's config. (only support Bash and Zsh)";
 
   @override
   void run() {
