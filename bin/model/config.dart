@@ -68,7 +68,7 @@ final class AliifyState {
     final homeDir = Platform.environment['HOME'];
 
     if (homeDir == null) {
-      stderr.writeln('[ERROR] Could not resolved home directory.');
+      stderr.writeln('[ERROR] Could not resolve home directory.');
       return;
     }
 
@@ -80,7 +80,7 @@ final class AliifyState {
     }
 
     final shellConfigFile = File(p.join(homeDir, configFileName));
-    final (_, aliasBank) = repo.resources();
+    final (bankDir, aliasBank) = repo.resources();
 
     final sourceLine = "source '$aliasBank'";
 
@@ -94,9 +94,12 @@ final class AliifyState {
 
     try {
       final sink = shellConfigFile.openWrite(mode: .append);
+      sink.writeln();
       sink.writeln('\n##### Aliify Alias Bank Connection');
       sink.writeln(sourceLine);
+      sink.writeln("export PATH=\"\$PATH:${p.dirname(bankDir)}\"");
       sink.writeln('##### Aliify');
+      sink.writeln();
       await sink.close();
       print('Success! Added aliify to your $configFileName file.');
       print(

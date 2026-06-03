@@ -209,7 +209,7 @@ class SetupCommand extends Command {
 
   SetupCommand(this._state)
     : description =
-          "Appends and sources aliify's file path: ${_state.file.path} command into the shell's config. (only support Bash and Zsh)";
+          "Adds and sources aliify's file path: ${_state.file.path} in the shell's config. Additionally adds aliify to PATH. (only support Bash and Zsh)";
 
   @override
   void run() {
