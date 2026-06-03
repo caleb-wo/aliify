@@ -17,7 +17,17 @@ Directory: /path/to/bank
 File: /path/to/bank/file
 ```
 
+**Configuration**:
+
 From there you can add it to your path however you wish. Make sure you also source the file `aliify/bank/alias_bank.sh` in your shell config (e.g., `.zshrc`, `.bashrc`).
+
+If you're using Bash or Z Shell you can simply run the following command from the aliify root directory:
+
+```bash
+> ./aliify setup
+```
+
+
 
 # Usage
 
@@ -84,6 +94,10 @@ New: alias c3_compiler='c3c';
 ## Resources
 
 By running `aliify resources`, Aliify prints the paths to it's bank directory & file.
+
+## Setup
+
+Add a source string to the users shell configuration file. This _ONLY_ works for bash or z shell. But, wiring it up for windows wouldn't be to hard.
 
 ## Help
 
