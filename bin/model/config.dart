@@ -63,6 +63,49 @@ final class AliifyState {
       return false;
     }
   }
+
+  void aliifyInit() async {
+    final homeDir = Platform.environment['HOME'];
+
+    if (homeDir == null) {
+      stderr.writeln('[ERROR] Could not resolved home directory.');
+      return;
+    }
+
+    final shellPath = Platform.environment['SHELL'] ?? '';
+    String configFileName = '.bashrc'; // default
+
+    if (shellPath.contains('zsh')) {
+      configFileName = '.zshrc';
+    }
+
+    final shellConfigFile = File(p.join(homeDir, configFileName));
+    final (_, aliasBank) = repo.resources();
+
+    final sourceLine = "source '$aliasBank'";
+
+    if (shellConfigFile.existsSync()) {
+      final configContent = await shellConfigFile.readAsString();
+      if (configContent.contains(aliasBank)) {
+        print('Aliify is already configured in $configFileName!');
+        return;
+      }
+    }
+
+    try {
+      final sink = shellConfigFile.openWrite(mode: .append);
+      sink.writeln('\n##### Aliify Alias Bank Connection');
+      sink.writeln(sourceLine);
+      sink.writeln('##### Aliify');
+      await sink.close();
+      print('Success! Added aliify to your $configFileName file.');
+      print(
+        'Please run: "source ~/$configFileName" or open a new terminal tab to activate!',
+      );
+    } catch (e) {
+      stderr.writeln('[ERROR] Failed to write to shell config file.\n$e');
+    }
+  }
 }
 
 enum Status {

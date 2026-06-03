@@ -21,7 +21,8 @@ void main(List<String> args) async {
         ..addCommand(AddCommand(repo))
         ..addCommand(RemoveCommand(repo))
         ..addCommand(UpdateCommand(repo))
-        ..addCommand(ResourcesCommand(repo));
+        ..addCommand(ResourcesCommand(repo))
+        ..addCommand(SetupCommand(state));
 
   try {
     await runner.run(args);
@@ -174,5 +175,24 @@ class UpdateCommand extends Command {
     print('Successfully updated alias at position $position.');
     print('Old: ${result.$1}');
     print('New: ${result.$2}');
+  }
+}
+
+class SetupCommand extends Command {
+  final AliifyState _state;
+
+  SetupCommand(this._state)
+    : description =
+          "Appends and sources aliify's file path: ${_state.file.path} command into the shell's config.";
+
+  @override
+  String name = 'setup';
+
+  @override
+  String description;
+
+  @override
+  void run() {
+    _state.aliifyInit();
   }
 }
