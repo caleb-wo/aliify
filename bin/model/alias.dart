@@ -116,12 +116,12 @@ class AliasList extends ListBase<Alias> {
   @override
   String toString() {
     if (list.isEmpty) return 'AliasList: [ /* empty */ ]'; // Saftey check
-    final buffer = StringBuffer('Aliases: [')..writeln();
+    final buffer = StringBuffer('Aliases:')..writeln();
 
     for (final alias in list) {
       buffer.writeln('  ${alias.toDisplayString()}');
     }
-    buffer.writeln(']');
+    buffer.writeln();
 
     return buffer.toString();
   }
